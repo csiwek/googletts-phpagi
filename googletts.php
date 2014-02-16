@@ -43,13 +43,21 @@ class GoogleTTS {
 		}
 
 	}
-	public function say_tts($text){
-		$filename = $this->tmp . "/gtts_" . md5($text.$this->lang.$this->speed) ;
+	public function say_tts($text, $lang = null, $speed = null, $noanswer=null){
+		if (!$lang) {
+			 $lang = $this->lang;
+		}
+		if (!$speed){
+			$speed = $this->speed;
+		}
+		
+		
+		$filename = $this->tmp . "/gtts_" . md5($text.$lang.$speed) ;
 		$this->filename = $filename;
 		if (!file_exists($filename.".mp3")){
 
 			$tuCurl = curl_init();
-			$url = $this->ttsURL . "?tl=" . $this->lang . "&q=" . urlencode($text);
+			$url = $this->ttsURL . "?tl=" . $lang . "&q=" . urlencode($text);
 			$this->dbg("Fetching URL: $url");
 			curl_setopt($tuCurl, CURLOPT_URL, $url);
 			curl_setopt($tuCurl, CURLOPT_VERBOSE, 0);
@@ -70,11 +78,17 @@ class GoogleTTS {
 		}
 		$this->convertMP3ToWAV($filename);
 		$this->detect_format();
-		$this->CreateAsteriskFile();
-		if($this->destFile) {
-
-			$this->agi->stream_file($this->destFile);
+		$destFile = $this->CreateAsteriskFile($speed);
+		$this->dbg("Will try to play file: $destFile");
+		if($destFile) {
+			$playstring = $destFile;
+			if ($noanswer){
+				$playstring .=  ",noanswer";
+			}	
+			//$this->agi->stream_file($this->destFile);
+			$this->agi->exec("Playback", $playstring);
 		}
+		
 	}
 
 	public function convertMP3ToWAV($filename){
@@ -88,19 +102,23 @@ class GoogleTTS {
 		$this->dbg("mpg123 returned $retMpg123");
 	}
 
-	private function CreateAsteriskFile (){
-		$destFile = $this->filename . "_" . $this->samplerate ; 
+	private function CreateAsteriskFile($speed){
+		$destFile = $this->filename . "_" . $this->samplerate."_".$speed ;
+		if (file_exists($destFile . "." . $this->format)){
+			$this->dbg("Asterisk sound file already exists: ".$destFile." In ".$this->samplerate."_".$speed);
+			return $destFile;
+		}
 	        $soxcmd = $this->sox ." ".  $this->filename.".wav -q -r " . $this->samplerate . " -t raw ". $destFile . "." . $this->format;
-		if ($this->speed != 1) {
+		if ($speed != 1) {
 			if ($this->SoxVer >= 14) {
-				$soxcmd .=  " tempo -s " . $this->speed;
+				$soxcmd .=  " tempo -s " . $speed;
 			} else {
-				$soxcmd .=  " stretch 1/" . $this->speed . " 80";
+				$soxcmd .=  " stretch 1/" . $speed . " 80";
 			}
 		}
 		$this->dbg("executing sox: $soxcmd");
-		$this->destFile = $destFile;
 		exec($soxcmd);
+		return $destFile;
 
 	}
 

@@ -22,9 +22,35 @@ You need to have:
 
 look at the example.php file. Just run it as an AGI script from Asterisk's Dialplan:
 
+
+
+To generate text in default language with default speeed
 ```no-highlight
-exten => 602,1,Answer()
-exten => 602,n,agi(example.php)
+$tts->say_tts("This is a test");  
+```
+
+To generate text in Polish, with default speeed
+```no-highlight
+$tts->say_tts("To jest test", 'pl');  
+```
+
+To generate text in Polish, with speeed x2
+```no-highlight
+$tts->say_tts("To jest test", 'pl' ,2);
+```
+
+To generate text in Polish, with speeed x2, without answering the call (will play file as early media)
+```no-highlight
+$tts->say_tts("To jest test", 'pl' ,2 'noanswer');
+```
+
+
+
+
+exensions.conf may look like this:
+```no-highlight
+exten => 602,1,Noop()
+exten => 602,n,agi(gtts/example.php)
 ```
 
 # Remarks
