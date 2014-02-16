@@ -22,9 +22,10 @@ You need to have:
 
 look at the example.php file. Just run it as an AGI script from Asterisk's Dialplan:
 
+```no-highlight
 exten => 602,1,Answer()
 exten => 602,n,agi(example.php)
-
+```
 
 # Remarks
 
