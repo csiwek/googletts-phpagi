@@ -12,6 +12,6 @@ require '/var/lib/asterisk/agi-bin//phpagi.php';
 	$agi->exec("Progress", "");
 	$tts->say_tts("Trying to connect this call", 'en', 1, "noanswer");
 	$agi->answer();
-	$tts->say_tts("I'm sorry. The number you've dialed is incorrect", 'en', 1);
-	
+	$tts->say_tts("I'm sorry. The number you've dialed is incorrect", 'en', 1.5);
+	$tts->say_tts("Niestety, nie udało się wykonać połączenia.", 'pl', 1.5);
 ?>
