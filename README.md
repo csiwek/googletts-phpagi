@@ -36,12 +36,12 @@ $tts->say_tts("To jest test", 'pl');
 
 To generate text in Polish, with speeed x2
 ```no-highlight
-$tts->say_tts("To jest test", 'pl' ,2);
+$tts->say_tts("To jest test", 'pl', 2);
 ```
 
 To generate text in Polish, with speeed x2, without answering the call (will play file as early media)
 ```no-highlight
-$tts->say_tts("To jest test", 'pl' ,2 'noanswer');
+$tts->say_tts("To jest test", 'pl', 2, 'noanswer');
 ```
 
 
